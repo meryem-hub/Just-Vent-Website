@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import EmojiPicker from 'emoji-picker-react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 export default function VentForm() {
   const MAX_CHARACTERS = 300;
@@ -13,7 +13,7 @@ export default function VentForm() {
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
   const emojiPickerRef = useRef(null);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,15 +21,22 @@ export default function VentForm() {
 
     setIsSubmitting(true);
     try {
-      // Simulate API call or data handling
-      await new Promise(resolve => setTimeout(resolve, 500)); // Simulate delay
+      const imageBase64 = await Promise.all(
+        images.map(file => {
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.readAsDataURL(file);
+          });
+        })
+      );
 
-      // Navigate to the new post page and pass state
       navigate('/post', {
         state: {
           text: ventText,
           mood: mood,
-          imagePreviews: imagePreviews, // Pass the actual preview URLs
+          imagePreviews: imageBase64,
+          tags: []
         },
       });
 
